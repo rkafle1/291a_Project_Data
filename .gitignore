@@ -4,6 +4,8 @@ RAG/evaluation_results.json
 RAG/results/*
 baselines/qdrant/qdrant_result/*
 baselines/faiss/faiss_result/*
+RAG/analysis/*.jpg
+RAG/analysis/*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
