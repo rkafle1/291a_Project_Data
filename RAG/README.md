@@ -10,50 +10,9 @@ This RAG system implements state-of-the-art techniques from code retrieval resea
 |-----------|------------|-------------|
 | **Embedding** | UniXcoder | Cross-modal code-text alignment |
 | **Chunking** | AST/Functional | Syntax-aware code chunking |
-| **Storage** | Graph DB (NetworkX) + Vector Store (FAISS) | Hybrid storage for structure-aware retrieval |
+| **Storage** | Graph DB (NetworkX) + Vector Store (FAISS / Qdrant) | Hybrid storage for structure-aware retrieval |
 | **Retrieval** | RepoCoder | Iterative retrieval with draft generation |
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PyTorch Lightning RAG                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│  │  Source Code │    │Documentation │    │  Discussions │      │
-│  │   (JSON)     │    │   (JSON)     │    │    (JSON)    │      │
-│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘      │
-│         │                   │                   │               │
-│         ▼                   ▼                   ▼               │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│  │ AST Chunker  │    │  Recursive   │    │  Discussion  │      │
-│  │              │    │   Chunker    │    │   Chunker    │      │
-│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘      │
-│         │                   │                   │               │
-│         └───────────────────┼───────────────────┘               │
-│                             ▼                                   │
-│                   ┌──────────────────┐                          │
-│                   │   UniXcoder      │                          │
-│                   │   Embeddings     │                          │
-│                   └────────┬─────────┘                          │
-│                            │                                    │
-│         ┌──────────────────┼──────────────────┐                │
-│         ▼                  ▼                  ▼                │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │ Vector Store │  │  Graph DB    │  │    BM25      │         │
-│  │   (FAISS)    │  │ (NetworkX)   │  │   Index      │         │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘         │
-│         │                 │                 │                  │
-│         └─────────────────┼─────────────────┘                  │
-│                           ▼                                    │
-│                 ┌──────────────────┐                           │
-│                 │ Hybrid Retriever │                           │
-│                 │   (RepoCoder)    │                           │
-│                 └──────────────────┘                           │
-│                                                                │
-└─────────────────────────────────────────────────────────────────┘
-```
 
 ## Installation
 
@@ -163,22 +122,6 @@ python pipeline.py --mode eval \
     --query-file "../final data/new_requests.json" \
     --output evaluation_results.json
 ```
-
-## Baseline Comparison
-
-Compare the RAG system against baselines:
-
-```bash
-python run_baseline_comparison.py \
-    --query-file "../final data/new_requests.json" \
-    --output comparison_results.json
-```
-
-This compares:
-1. **BM25** - Traditional sparse retrieval
-2. **Dense** - UniXcoder embeddings without graph
-3. **Hybrid (No Graph)** - Dense + BM25 without graph expansion
-4. **Full RAG** - Complete system with graph expansion
 
 
 
