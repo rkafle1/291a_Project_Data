@@ -10,9 +10,17 @@ We recommend to use conda environment. All of our codes are executed on a Nvidia
 
 ```bash
 conda create -n rag python=3.10
-conda activate rag2
+conda activate rag
 
 pip install -r requirements.txt
+```
+
+This would automatically install `faiss-cpu`. To enable GPU support, run:
+
+```bash
+pip uninstall faiss-cpu
+pip install faiss-gpu
+pip install 'numpy<2'  # faiss-gpu is not compatible with numpy>2
 ```
 
 For qdrant vector database, its recommended to use docker. Run the following command, and `sudo` may be required.
