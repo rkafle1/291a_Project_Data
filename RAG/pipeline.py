@@ -438,7 +438,8 @@ class PyTorchLightningRAG:
         if graph_file.exists():
             self.graph_db.load(str(graph_file))
         # Restore BM25 if available
-        self.retriever.load_sparse(str(input_path / "bm25.json"))
+        if self.config['storage']['vector_store']['backend'] != 'faiss':
+            self.retriever.load_sparse(str(input_path / "bm25.json"))
         logger.info(f"Loaded RAG system from {input_path}")
     
     def query(

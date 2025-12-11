@@ -6,6 +6,13 @@ Lai Wei (A69034175), Kaiying Han (A69042727), Richa Kafle (A16964299)
 
 ## Installation
 
+```bash
+https://github.com/rkafle1/291a_Project_Data.git
+
+cd 291a_Project_Data
+git submodule update --init --recursive
+```
+
 We recommend to use conda environment. All of our codes are executed on a Nvidia GPU enabled Ubuntu 22.04 workstation.
 
 ```bash
@@ -91,6 +98,19 @@ To run ablation experiment, run:
 
 ```bash
 bash scripts/run_ablation_retrieval.sh
+```
+
+---
+
+To make plotting, after running the execution scripts, run following:
+
+```bash
+# whole plot
+python analysis/barplot.py
+# per indicator plot
+python analysis/barplot2.py
+# ablation plot
+python analysis/barplot3.py
 ```
 
 ### baselines
