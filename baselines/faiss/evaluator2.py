@@ -302,7 +302,7 @@ def main():
     script_dir = Path(__file__).parent
     results_path = script_dir / "faiss_result" / "retrieval_results.json"
     ground_truth_path = script_dir / ".." / ".." / "requests" / "new_requests.json"
-    output_path = script_dir / "faiss_result" / "evaluation_results.json"
+    output_path = script_dir / ".." / ".." / "RAG" / "results" / "baseline_faiss_results.json"
 
     if not results_path.exists():
         raise FileNotFoundError(f"Retrieval results not found: {results_path}")

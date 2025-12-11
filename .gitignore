@@ -1,6 +1,9 @@
 baselines/faiss/faiss_result/*
 RAG/saved_index/*
 RAG/evaluation_results.json
+RAG/results/*
+baselines/qdrant/qdrant_result/*
+baselines/faiss/faiss_result/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -40,5 +40,5 @@ batch_size: 32
 request_paths:
   # - ../../requests/docs_request.json
   # - ../../requests/richa_requests.json
-  - ../../requests/final_requests.json
+  - ../../requests/new_requests.json
 

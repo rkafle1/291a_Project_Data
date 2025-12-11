@@ -27,7 +27,7 @@ class SourceCodeParser:
         sections = {}
         
         # Extract Meta Data section
-        meta_match = re.search(r'--- Meta Data ---\n(.*?)(?=\n---|\Z)', text, re.DOTALL)
+        meta_match = re.search(r'--- Metadata ---\n(.*?)(?=\n---|\Z)', text, re.DOTALL)
         if meta_match:
             meta_text = meta_match.group(1)
             sections['meta'] = {}
@@ -35,12 +35,12 @@ class SourceCodeParser:
             # Parse meta fields
             sections['meta']['repo'] = SourceCodeParser._extract_field(meta_text, 'Repo')
             sections['meta']['path'] = SourceCodeParser._extract_field(meta_text, 'Path')
-            sections['meta']['func_name'] = SourceCodeParser._extract_field(meta_text, 'Function Name')
+            sections['meta']['func_name'] = SourceCodeParser._extract_field(meta_text, 'Name')
             sections['meta']['language'] = SourceCodeParser._extract_field(meta_text, 'Language')
             sections['meta']['partition'] = SourceCodeParser._extract_field(meta_text, 'Partition')
         
         # Extract Docstring section
-        docstring_match = re.search(r'--- Docstring ---\n(.*?)(?=\n---|\Z)', text, re.DOTALL)
+        docstring_match = re.search(r'--- Documentation ---\n(.*?)(?=\n---|\Z)', text, re.DOTALL)
         if docstring_match:
             sections['docstring'] = docstring_match.group(1).strip()
         else:
