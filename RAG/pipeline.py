@@ -406,6 +406,8 @@ class PyTorchLightningRAG:
         output_path.mkdir(parents=True, exist_ok=True)
         self.vector_store.save(str(output_path / "vector_store"))
         self.graph_db.save(str(output_path / "graph.json"))
+        # Persist BM25 data so sparse retrieval works after load
+        self.retriever.save_sparse(str(output_path / "bm25.json"))
         with open(output_path / "config.yaml", 'w') as f:
             yaml.dump(self.config, f)
         logger.info(f"Saved RAG system to {output_path}")
@@ -426,6 +428,8 @@ class PyTorchLightningRAG:
         graph_file = input_path / "graph.json"
         if graph_file.exists():
             self.graph_db.load(str(graph_file))
+        # Restore BM25 if available
+        self.retriever.load_sparse(str(input_path / "bm25.json"))
         logger.info(f"Loaded RAG system from {input_path}")
     
     def query(

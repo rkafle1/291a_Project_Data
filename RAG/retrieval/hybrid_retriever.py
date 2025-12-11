@@ -9,6 +9,7 @@ Implements the "Search-Expand-Refine" methodology from RepoHyper:
 Also implements iterative retrieval-generation for discussion data.
 """
 
+import json
 import logging
 from typing import List, Dict, Any, Optional, Tuple, Union
 from dataclasses import dataclass
@@ -88,6 +89,59 @@ class HybridRetriever:
         self.bm25 = BM25Okapi(self.bm25_corpus)
         
         logger.info(f"Fitted BM25 on {len(corpus)} documents")
+    
+    def save_sparse(self, path: str):
+        """
+        Persist BM25 tokenized corpus and id map so sparse search works after load.
+        """
+        if self.bm25 is None:
+            logger.info("BM25 not fitted; skipping sparse save.")
+            return
+        
+        from pathlib import Path
+        
+        payload = {
+            "id_map": self.bm25_id_map,
+            "corpus_tokens": self.bm25_corpus,
+        }
+        
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w") as f:
+            json.dump(payload, f)
+        
+        logger.info(f"Saved BM25 data to {output_path}")
+    
+    def load_sparse(self, path: str):
+        """
+        Load BM25 tokenized corpus and id map, rebuilding the BM25 model.
+        """
+        try:
+            from rank_bm25 import BM25Okapi
+        except ImportError:
+            logger.warning("rank_bm25 not installed. Sparse retrieval disabled.")
+            return
+        
+        from pathlib import Path
+        
+        input_path = Path(path)
+        if not input_path.exists():
+            logger.info(f"No BM25 data found at {input_path}, skipping sparse load.")
+            return
+        
+        with open(input_path, "r") as f:
+            payload = json.load(f)
+        
+        self.bm25_id_map = payload.get("id_map", [])
+        self.bm25_corpus = payload.get("corpus_tokens", [])
+        
+        if not self.bm25_corpus:
+            logger.info("BM25 payload empty; skipping sparse load.")
+            self.bm25 = None
+            return
+        
+        self.bm25 = BM25Okapi(self.bm25_corpus)
+        logger.info(f"Loaded BM25 data with {len(self.bm25_id_map)} documents")
     
     def _tokenize(self, text: str) -> List[str]:
         """Simple tokenization for BM25"""
@@ -171,12 +225,12 @@ class HybridRetriever:
                     retrieval_results.append(RetrievalResult(
                         id=doc_id,
                         score=float(bm25_scores[idx]),
-                        content=self.bm25_corpus[idx],
+                        content=' '.join(self.bm25_corpus[idx]),
                         chunk_type='unknown',
                         source='sparse',
                         metadata={'bm25_score': float(bm25_scores[idx])}
                     ))
-        
+
         # Phase 3: Combine and sort
         if use_hybrid and self.bm25 is not None:
             # Create score lookup
