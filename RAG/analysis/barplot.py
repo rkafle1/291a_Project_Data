@@ -121,6 +121,7 @@ def plot_bar(
 
     # Pair light/dark colors per backend: FAISS (light/dark), Qdrant (light/dark).
     colors = ["#9ECAE1", "#08519C", "#FDD0A2", "#D94801"]
+    offsets_by_method = {}
     for idx, method in enumerate(methods):
         means = []
         stds = []
@@ -149,6 +150,34 @@ def plot_bar(
             yerr=yerr,
             capsize=3,
         )
+        offsets_by_method[method] = offsets
+
+    # Annotate percentage improvements of Ours over Baseline within each backend.
+    pairs = [
+        ("Baseline (FAISS)", "Ours (FAISS)"),
+        ("Baseline (Qdrant)", "Ours (Qdrant)"),
+    ]
+    for indicator_idx, indicator in enumerate(indicator_names):
+        for base_label, ours_label in pairs:
+            base_mean = next((r["mean"] for r in table if r["indicator"] == indicator and r["method"] == base_label), np.nan)
+            ours_mean = next((r["mean"] for r in table if r["indicator"] == indicator and r["method"] == ours_label), np.nan)
+            base_off = offsets_by_method[base_label][indicator_idx]
+            ours_off = offsets_by_method[ours_label][indicator_idx]
+
+            if np.isnan(base_mean) or np.isnan(ours_mean) or base_mean == 0:
+                continue
+            improvement = (ours_mean - base_mean) / base_mean * 100.0
+            y_pos = max(base_mean, ours_mean) * 1.05
+            x_pos = (base_off + ours_off) / 2.0
+            ax.text(
+                x_pos,
+                y_pos,
+                f"{improvement:+.1f}%",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="#444444",
+            )
 
     ax.set_xticks(x)
     ha = "right" if x_tick_rotation else "center"

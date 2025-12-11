@@ -30,7 +30,6 @@ class SourceCodeParser:
         meta_match = re.search(r'--- Metadata ---\n(.*?)(?=\n---|\Z)', text, re.DOTALL)
         if meta_match:
             meta_text = meta_match.group(1)
-            print(meta_text)
             sections['meta'] = {}
             
             # Parse meta fields
@@ -80,10 +79,6 @@ class SourceCodeParser:
         docstring = sections.get('docstring', '')
         code = sections.get('code', '')
 
-        print("func_name", func_name)
-        print("path", path)
-        print("docstring", docstring)
-        print("code", code)
         assert len(func_name) > 0, "Function name should not be empty"
 
         # Create docstring summary (first line)

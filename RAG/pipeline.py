@@ -18,7 +18,6 @@ Usage:
 import argparse
 import json
 import logging
-import sys
 import uuid  # <--- ADDED THIS
 from pathlib import Path
 from typing import List, Dict, Any, Optional
@@ -486,6 +485,7 @@ def main():
     parser.add_argument('--index-dir', default='saved_index', help='Directory for saved index')
     parser.add_argument('--query-file', default=None, help='Path to evaluation queries (for eval mode)')
     parser.add_argument('--output', default='evaluation_results.json', help='Output file for evaluation results')
+    parser.add_argument('--sim-threshold', type=float, default=0.3, help='Similarity threshold for GT matching during evaluation')
     
     args = parser.parse_args()
     rag = PyTorchLightningRAG(args.config)
@@ -518,7 +518,7 @@ def main():
             
             for i, r in enumerate(results, 1):
                 print(f"Result {i}")
-                print(f"--------")
+                print("--------")
                 print(f"Type:       [{r['type']}]")
                 print(f"Score:      {r['score']:.4f}")
                 print(f"ID:         {r['id']}")
@@ -543,7 +543,7 @@ def main():
                         print(f"   -> {ctx['relation']}: {ctx['name']} ({ctx['type']})")
 
                 # print full content or a larger chunk
-                print(f"Content:") 
+                print("Content:") 
                 print(f"{r['content']}") 
                 print(f"\n{'='*60}\n")
     elif args.mode == 'eval':
@@ -557,7 +557,12 @@ def main():
         if query_file is None:
             base_path = Path(rag.config['data']['base_path'])
             query_file = base_path / rag.config['data']['request_file']
-        results = run_evaluation(rag.retriever, str(query_file), args.output)
+        results = run_evaluation(
+            rag.retriever,
+            str(query_file),
+            args.output,
+            sim_threshold=args.sim_threshold
+        )
         print("\nEvaluation Results:")
         print(json.dumps(results, indent=2))
 

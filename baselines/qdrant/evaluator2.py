@@ -13,6 +13,7 @@ the same JSON format as RAG/evaluation_results.json.
 
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 from dataclasses import dataclass
@@ -305,6 +306,15 @@ class Evaluator2:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Evaluate Qdrant baseline results.")
+    parser.add_argument(
+        "--sim-threshold",
+        type=float,
+        default=0.3,
+        help="Cosine similarity threshold for matching retrieved passages to ground truth",
+    )
+    args = parser.parse_args()
+
     script_dir = Path(__file__).parent
     results_path = script_dir / "qdrant_result" / "retrieval_results.json"
     ground_truth_path = script_dir / ".." / ".." / "requests" / "new_requests.json"
@@ -315,7 +325,7 @@ def main():
     if not ground_truth_path.exists():
         raise FileNotFoundError(f"Ground truth not found: {ground_truth_path}")
 
-    evaluator = Evaluator2()
+    evaluator = Evaluator2(sim_threshold=args.sim_threshold)
     evaluator.evaluate_from_files(results_path, ground_truth_path, output_path)
 
 

@@ -628,7 +628,8 @@ def run_evaluation(
     top_k: int = 10,
     vector_types: Optional[List[str]] = None,
     expand_context: bool = True,
-    use_hybrid: bool = True
+    use_hybrid: bool = True,
+    sim_threshold: float = 0.3
 ) -> Dict[str, Any]:
     """
     Convenience function to run evaluation.
@@ -642,6 +643,8 @@ def run_evaluation(
         vector_types: Types of vectors to search (default: all types)
         expand_context: Whether to expand context using graph
         use_hybrid: Whether to use hybrid search (dense + sparse)
+        sim_threshold: Cosine similarity threshold used to match retrieved
+            passages to ground-truth passages
         
     Returns:
         Evaluation results dictionary
@@ -655,7 +658,8 @@ def run_evaluation(
         top_k=top_k,
         vector_types=vector_types,
         expand_context=expand_context,
-        use_hybrid=use_hybrid
+        use_hybrid=use_hybrid,
+        sim_threshold=sim_threshold
     )
     
     if output_file:
