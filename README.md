@@ -7,7 +7,7 @@ Lai Wei (A69034175), Kaiying Han (A69042727), Richa Kafle (A16964299)
 ## Installation
 
 ```bash
-https://github.com/rkafle1/291a_Project_Data.git
+git clone https://github.com/rkafle1/291a_Project_Data.git
 
 cd 291a_Project_Data
 git submodule update --init --recursive
